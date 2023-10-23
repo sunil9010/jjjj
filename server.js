@@ -4,7 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const uuid = require("uuid");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,11 +42,18 @@ app.get("/api/seats", (req, res) => {
     sql += ` AND status = ${db.escape(status)}`;
   }
 
-  // Execute the SQL query
+  // Debugging: Print the generated SQL query
+  console.log("Generated SQL query:", sql);
+
+  // Execute the SQL query with error handling
   db.query(sql, (err, results) => {
     if (err) {
-      console.error("Database error: " + err.message);
-      res.status(500).json({ error: "Internal server error" });
+      console.error("Database error:", err.message);
+
+      // Return a more detailed error response
+      res
+        .status(500)
+        .json({ error: "Internal server error", details: err.message });
     } else {
       res.json(results);
     }
